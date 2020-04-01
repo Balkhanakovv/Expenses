@@ -112,24 +112,28 @@ namespace database
 
         private void deleteNoteBt_Click(object sender, RoutedEventArgs e)
         {
-            if (db_path == "")
+            try
             {
-                MessageBox.Show("Создайте новую базу данных или\nоткройте уже существующую.");
+                if (db_path == "")
+                {
+                    MessageBox.Show("Создайте новую базу данных или\nоткройте уже существующую.");
+                }
+                else
+                {
+                    SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source = " + db_path + "; Version = 3; ");
+                    m_dbConnection.Open();
+
+                    var note = (dbNote)tableDG.SelectedItem;
+
+                    string sqlRequest = "DELETE FROM expenses WHERE name='" + note.name + "'";
+                    SQLiteCommand command = new SQLiteCommand(sqlRequest, m_dbConnection);
+                    command.ExecuteNonQuery();
+                    m_dbConnection.Close();
+
+                    showDB();
+                }
             }
-            else
-            {
-                SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source = " + db_path + "; Version = 3; ");
-                m_dbConnection.Open();
-
-                var note = (dbNote)tableDG.SelectedItem;
-
-                string sqlRequest = "DELETE FROM expenses WHERE name='" + note.name + "'";
-                SQLiteCommand command = new SQLiteCommand(sqlRequest, m_dbConnection);
-                command.ExecuteNonQuery();
-                m_dbConnection.Close();
-
-                showDB();
-            }
+            catch { }
         }
 
         private void refresh_dbnote(object sender, EventArgs e)
